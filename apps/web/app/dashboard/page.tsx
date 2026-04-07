@@ -57,13 +57,15 @@ export default async function DashboardPage() {
                             backgroundImage: `url(${event.backgroundImage})`,
                           }}
                         />
-                        <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+                        <div className="absolute inset-0 bg-background/50" />
                       </>
                     )}
                     <div className="relative z-10">
-                      <CardHeader>
+                      <CardHeader className="space-y-0.5 pb-2">
                         <div className="flex items-center gap-2">
-                          <CardTitle>{event.name}</CardTitle>
+                          <CardTitle className="text-3xl font-bold tracking-tight">
+                            {event.name}
+                          </CardTitle>
                           <EditEventDialog event={event} />
                         </div>
                         <CardDescription>
@@ -78,9 +80,9 @@ export default async function DashboardPage() {
                           )}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="pt-6">
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary">
+                          <Badge variant="secondary" className="px-3 py-1">
                             {event.participants.length} Responses
                           </Badge>
                         </div>
