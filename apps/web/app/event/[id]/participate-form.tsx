@@ -77,7 +77,7 @@ export function ParticipateForm({
                 </Button>
               )}
             </div>
-            <p className="min-h-[16px] text-xs text-muted-foreground">
+            <p className="min-h-4 text-xs text-muted-foreground">
               {date?.from ? (
                 date.to ? (
                   <>
@@ -91,7 +91,7 @@ export function ParticipateForm({
                 <span>Pick your available dates.</span>
               )}
             </p>
-            <div className="flex flex-row items-center justify-center overflow-x-auto rounded-md border bg-background p-2">
+            <div className="flex flex-row items-center justify-center overflow-x-auto rounded-xl border">
               <Calendar
                 mode="range"
                 selected={date}

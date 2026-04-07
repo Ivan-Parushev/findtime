@@ -1,5 +1,7 @@
 import { getEvents } from "../actions/getEvents"
 import { CreateEventDialog } from "./create-event-dialog"
+import { EditEventDialog } from "./edit-event-dialog"
+import { ShareEventButton } from "./share-event-button"
 import {
   Card,
   CardHeader,
@@ -40,31 +42,56 @@ export default async function DashboardPage() {
             (event: {
               _id: string
               name: string
+              backgroundImage?: string
               settings: { startDate: string; endDate: string }
               participants: unknown[]
             }) => (
-              <Link key={event._id} href={`/event/${event._id}`}>
-                <Card className="cursor-pointer transition-colors hover:border-primary">
-                  <CardHeader>
-                    <CardTitle>{event.name}</CardTitle>
-                    <CardDescription>
-                      {format(
-                        new Date(event.settings.startDate),
-                        "MMM d, yyyy"
-                      )}{" "}
-                      -{" "}
-                      {format(new Date(event.settings.endDate), "MMM d, yyyy")}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">
-                        {event.participants.length} Responses
-                      </Badge>
+              <div key={event._id} className="relative">
+                <Link href={`/event/${event._id}`}>
+                  <Card className="group relative cursor-pointer overflow-hidden transition-colors hover:border-primary">
+                    {event.backgroundImage && (
+                      <>
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                          style={{
+                            backgroundImage: `url(${event.backgroundImage})`,
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+                      </>
+                    )}
+                    <div className="relative z-10">
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <CardTitle>{event.name}</CardTitle>
+                          <EditEventDialog event={event} />
+                        </div>
+                        <CardDescription>
+                          {format(
+                            new Date(event.settings.startDate),
+                            "MMM d, yyyy"
+                          )}{" "}
+                          -{" "}
+                          {format(
+                            new Date(event.settings.endDate),
+                            "MMM d, yyyy"
+                          )}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary">
+                            {event.participants.length} Responses
+                          </Badge>
+                        </div>
+                      </CardContent>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </Card>
+                </Link>
+                <div className="absolute top-4 right-4 z-10 flex items-center">
+                  <ShareEventButton eventId={event._id} />
+                </div>
+              </div>
             )
           )}
         </div>

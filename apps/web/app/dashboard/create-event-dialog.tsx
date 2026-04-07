@@ -51,6 +51,10 @@ export function CreateEventDialog() {
               <Input type="date" id="endDate" name="endDate" required />
             </div>
           </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="image">Background Image (Optional)</label>
+            <Input type="file" id="image" name="image" accept="image/*" />
+          </div>
           <Button type="submit" className="mt-4">
             Create Event
           </Button>

@@ -9,6 +9,7 @@ export interface IParticipant {
 export interface IEvent extends Document {
   name: string
   creatorId: string
+  backgroundImage?: string
   settings: {
     startDate: Date
     endDate: Date
@@ -28,6 +29,7 @@ const EventSchema = new Schema<IEvent>(
   {
     name: { type: String, required: true },
     creatorId: { type: String, required: true }, // Clerk User ID
+    backgroundImage: { type: String, required: false },
     settings: {
       startDate: { type: Date, required: true },
       endDate: { type: Date, required: true },
@@ -38,7 +40,7 @@ const EventSchema = new Schema<IEvent>(
 )
 
 // Prevent mongoose from recompiling the model upon hot reload
-const Event: Model<IEvent> =
-  mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema)
+delete mongoose.models.Event
+const Event: Model<IEvent> = mongoose.model<IEvent>("Event", EventSchema)
 
 export default Event
