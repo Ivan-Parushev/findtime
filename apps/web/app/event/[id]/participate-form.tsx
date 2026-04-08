@@ -18,10 +18,12 @@ export function ParticipateForm({
   eventId,
   startDate,
   endDate,
+  cancelled,
 }: {
   eventId: string
   startDate: Date
   endDate: Date
+  cancelled?: boolean
 }) {
   const [name, setName] = useState("")
   const [date, setDate] = useState<DateRange | undefined>()
@@ -60,12 +62,13 @@ export function ParticipateForm({
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={cancelled || isSubmitting}
             />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Select Availability</label>
-              {date?.from && (
+              {date?.from && !cancelled && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -95,17 +98,25 @@ export function ParticipateForm({
               <Calendar
                 mode="range"
                 selected={date}
-                onSelect={setDate}
+                onSelect={cancelled ? undefined : setDate}
                 fromDate={startDate}
                 toDate={endDate}
                 defaultMonth={startDate}
                 initialFocus
                 numberOfMonths={2}
+                disabled={cancelled}
               />
             </div>
           </div>
-          <Button type="submit" disabled={isSubmitting || !name || !date?.from}>
-            {isSubmitting ? "Submitting..." : "Submit Availability"}
+          <Button
+            type="submit"
+            disabled={cancelled || isSubmitting || !name || !date?.from}
+          >
+            {cancelled
+              ? "Cancelled"
+              : isSubmitting
+                ? "Submitting..."
+                : "Submit Availability"}
           </Button>
         </form>
       </CardContent>

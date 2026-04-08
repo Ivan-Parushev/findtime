@@ -49,6 +49,7 @@ export default async function DashboardPage() {
               backgroundImage?: string
               settings: { startDate: string; endDate: string }
               participants: unknown[]
+              cancelled?: boolean
             }) => (
               <div key={event._id} className="relative">
                 <Link href={`/event/${event._id}`}>
@@ -88,7 +89,12 @@ export default async function DashboardPage() {
                         <div className="flex items-center gap-2">
                           <Badge variant="secondary" className="px-3 py-1">
                             {event.participants.length} Responses
-                          </Badge>
+                            </Badge>
+                            {event.cancelled && (
+                              <Badge variant="destructive" className="px-3 py-1">
+                                Cancelled
+                              </Badge>
+                            )}
                         </div>
                       </CardContent>
                     </div>

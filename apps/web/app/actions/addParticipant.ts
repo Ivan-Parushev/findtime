@@ -42,6 +42,7 @@ export async function addParticipant(
 
   const event = await Event.findById(eventId)
   if (!event) throw new Error("Event not found")
+  if (event.cancelled) throw new Error("Event is cancelled")
 
   const existingColors = event.participants.map(
     (p: { color: string }) => p.color

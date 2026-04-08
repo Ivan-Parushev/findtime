@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { updateEvent } from "./actions/updateEvent"
+import { cancelEvent } from "./actions/cancelEvent"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {
@@ -74,9 +75,28 @@ export function EditEventDialog({
                 Leave empty to keep current image.
               </p>
             </div>
-            <Button type="submit" className="mt-4">
-              Save Changes
-            </Button>
+            <div className="mt-4 flex gap-4">
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={async () => {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to cancel this event? People will no longer be able to submit their availability."
+                    )
+                  ) {
+                    await cancelEvent(event._id)
+                    setOpen(false)
+                  }
+                }}
+              >
+                Cancel Event
+              </Button>
+              <Button type="submit" className="flex-1">
+                Save Changes
+              </Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

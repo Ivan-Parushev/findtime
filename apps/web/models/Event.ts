@@ -10,6 +10,7 @@ export interface IEvent extends Document {
   name: string
   creatorId: string
   backgroundImage?: string
+  cancelled: boolean
   settings: {
     startDate: Date
     endDate: Date
@@ -30,6 +31,7 @@ const EventSchema = new Schema<IEvent>(
     name: { type: String, required: true },
     creatorId: { type: String, required: true }, // Clerk User ID
     backgroundImage: { type: String, required: false },
+    cancelled: { type: Boolean, default: false },
     settings: {
       startDate: { type: Date, required: true },
       endDate: { type: Date, required: true },

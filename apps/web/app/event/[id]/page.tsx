@@ -50,6 +50,11 @@ export default async function EventPage({
               </Link>
             </div>
           )}
+          {serializedEvent.cancelled && (
+            <div className="rounded-md bg-destructive/15 p-4 text-destructive border border-destructive/20 text-sm font-medium">
+              This event has been cancelled by the organizer. You cannot submit or change availability anymore.
+            </div>
+          )}
           <div className="flex flex-col gap-2">
             <h1 className="text-4xl font-bold tracking-tight">
               {serializedEvent.name}
@@ -72,6 +77,7 @@ export default async function EventPage({
             eventId={serializedEvent._id}
             startDate={new Date(serializedEvent.settings.startDate)}
             endDate={new Date(serializedEvent.settings.endDate)}
+            cancelled={serializedEvent.cancelled}
           />
 
           <AvailabilityMatrix participants={serializedEvent.participants} />
