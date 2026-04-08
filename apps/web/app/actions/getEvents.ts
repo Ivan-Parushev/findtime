@@ -13,7 +13,9 @@ export async function getEvents() {
 
   await dbConnect()
 
-  const events = await Event.find({ creatorId: userId }).sort({ createdAt: -1 })
+  const events = await Event.find({
+    $or: [{ creatorId: userId }, { "participants.userId": userId }],
+  }).sort({ createdAt: -1 })
 
   return JSON.parse(JSON.stringify(events))
 }

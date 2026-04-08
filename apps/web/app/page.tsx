@@ -3,6 +3,7 @@ import { CreateEventDialog } from "./create-event-dialog"
 import { EditEventDialog } from "./edit-event-dialog"
 import { ShareEventButton } from "./share-event-button"
 import { UserButton } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import {
   Card,
   CardHeader,
@@ -14,8 +15,85 @@ import { Badge } from "@workspace/ui/components/badge"
 import Link from "next/link"
 import { format } from "date-fns"
 
+type DashboardEvent = {
+  _id: string
+  name: string
+  backgroundImage?: string
+  creatorId: string
+  settings: { startDate: string; endDate: string }
+  participants: unknown[]
+  cancelled?: boolean
+}
+
+function EventCard({ event, userId }: { event: DashboardEvent; userId: string }) {
+  return (
+    <div className="relative">
+      <Link href={`/event/${event._id}`}>
+        <Card className="group relative cursor-pointer overflow-hidden transition-colors hover:border-primary">
+          {event.backgroundImage && (
+            <>
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{
+                  backgroundImage: `url(${event.backgroundImage})`,
+                }}
+              />
+              <div className="absolute inset-0 bg-background/50" />
+            </>
+          )}
+          <div className="relative z-10">
+            <CardHeader className="space-y-0.5 pb-2">
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-3xl font-bold tracking-tight">
+                  {event.name}
+                </CardTitle>
+                {event.creatorId === userId && (
+                  <EditEventDialog event={event} />
+                )}
+              </div>
+              <CardDescription>
+                {format(new Date(event.settings.startDate), "MMM d, yyyy")} -{" "}
+                {format(new Date(event.settings.endDate), "MMM d, yyyy")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="px-3 py-1">
+                  {event.participants.length} Responses
+                </Badge>
+                {event.cancelled && (
+                  <Badge variant="destructive" className="px-3 py-1">
+                    Cancelled
+                  </Badge>
+                )}
+                {event.creatorId !== userId && (
+                  <Badge variant="outline" className="px-3 py-1 border-primary/20 bg-primary/10 text-primary">
+                    Participating
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
+          </div>
+        </Card>
+      </Link>
+      <div className="absolute top-4 right-4 z-10 flex items-center">
+        <ShareEventButton eventId={event._id} />
+      </div>
+    </div>
+  )
+}
+
 export default async function DashboardPage() {
+  const { userId } = await auth()
+  
+  if (!userId) {
+    return null
+  }
+
   const events = await getEvents()
+
+  const myEvents = events.filter((e: DashboardEvent) => e.creatorId === userId)
+  const participatingEvents = events.filter((e: DashboardEvent) => e.creatorId !== userId)
 
   return (
     <div className="container mx-auto flex max-w-4xl flex-col gap-8 px-4 py-10">
@@ -23,7 +101,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Your Events</h1>
           <p className="mt-1 text-muted-foreground">
-            Manage all your organized scheduling events.
+            Manage all your organized and joined scheduling events.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -34,77 +112,34 @@ export default async function DashboardPage() {
 
       {events.length === 0 ? (
         <div className="flex flex-col items-center rounded-lg border p-12 text-center">
-          <h3 className="text-xl font-bold">No events created</h3>
+          <h3 className="text-xl font-bold">No events found</h3>
           <p className="mt-2 mb-4 text-muted-foreground">
-            You have not created any events yet. Get started by creating one.
+            You have not created or joined any events yet. Get started by creating one.
           </p>
           <CreateEventDialog />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {events.map(
-            (event: {
-              _id: string
-              name: string
-              backgroundImage?: string
-              settings: { startDate: string; endDate: string }
-              participants: unknown[]
-              cancelled?: boolean
-            }) => (
-              <div key={event._id} className="relative">
-                <Link href={`/event/${event._id}`}>
-                  <Card className="group relative cursor-pointer overflow-hidden transition-colors hover:border-primary">
-                    {event.backgroundImage && (
-                      <>
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${event.backgroundImage})`,
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-background/50" />
-                      </>
-                    )}
-                    <div className="relative z-10">
-                      <CardHeader className="space-y-0.5 pb-2">
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="text-3xl font-bold tracking-tight">
-                            {event.name}
-                          </CardTitle>
-                          <EditEventDialog event={event} />
-                        </div>
-                        <CardDescription>
-                          {format(
-                            new Date(event.settings.startDate),
-                            "MMM d, yyyy"
-                          )}{" "}
-                          -{" "}
-                          {format(
-                            new Date(event.settings.endDate),
-                            "MMM d, yyyy"
-                          )}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="px-3 py-1">
-                            {event.participants.length} Responses
-                            </Badge>
-                            {event.cancelled && (
-                              <Badge variant="destructive" className="px-3 py-1">
-                                Cancelled
-                              </Badge>
-                            )}
-                        </div>
-                      </CardContent>
-                    </div>
-                  </Card>
-                </Link>
-                <div className="absolute top-4 right-4 z-10 flex items-center">
-                  <ShareEventButton eventId={event._id} />
-                </div>
+        <div className="flex flex-col gap-8">
+          {myEvents.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight">Organized by you</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {myEvents.map((event: DashboardEvent) => (
+                  <EventCard key={event._id} event={event} userId={userId!} />
+                ))}
               </div>
-            )
+            </div>
+          )}
+
+          {participatingEvents.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight">Shared with you</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {participatingEvents.map((event: DashboardEvent) => (
+                  <EventCard key={event._id} event={event} userId={userId!} />
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
