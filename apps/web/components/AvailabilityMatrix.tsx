@@ -7,10 +7,12 @@ import {
   CardContent,
 } from "@workspace/ui/components/card"
 import { format, isSameDay } from "date-fns"
+import Image from "next/image"
 
 export interface ParticipantType {
   _id?: string
   name: string
+  imageUrl?: string
   color: string
   availableDates: (string | Date)[]
 }
@@ -82,7 +84,18 @@ export function AvailabilityMatrix({
               key={p._id || p.name}
               className="flex items-center gap-1.5 rounded-md border bg-secondary px-2 py-1 text-sm font-medium"
             >
-              <div className={`h-3 w-3 rounded-full ${p.color}`} />
+              {p.imageUrl ? (
+                <div className="relative h-4 w-4 shrink-0 overflow-hidden rounded-full font-bold">
+                  <Image
+                    src={p.imageUrl}
+                    alt={p.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className={`h-3 w-3 rounded-full ${p.color}`} />
+              )}
               <span>{p.name}</span>
             </div>
           ))}
@@ -104,13 +117,28 @@ export function AvailabilityMatrix({
                   {format(data.date, "E, MMM d")}
                 </div>
                 <div className="flex h-12 flex-wrap content-start gap-1.5 border-t pt-2 align-top">
-                  {data.availableParticipants.map((p: ParticipantType) => (
-                    <div
-                      key={p._id || p.name}
-                      className={`h-3.5 w-3.5 rounded-full ${p.color} group relative shrink-0 shadow-sm`}
-                      title={p.name}
-                    />
-                  ))}
+                  {data.availableParticipants.map((p: ParticipantType) =>
+                    p.imageUrl ? (
+                      <div
+                        key={p._id || p.name}
+                        className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full shadow-sm"
+                        title={p.name}
+                      >
+                        <Image
+                          src={p.imageUrl}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        key={p._id || p.name}
+                        className={`h-4 w-4 rounded-full ${p.color} shrink-0 shadow-sm`}
+                        title={p.name}
+                      />
+                    )
+                  )}
                   {data.count === 0 && (
                     <span className="w-full text-center text-xs text-muted-foreground">
                       None

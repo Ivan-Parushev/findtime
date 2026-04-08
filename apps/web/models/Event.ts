@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose"
 export interface IParticipant {
   userId?: string
   name: string
+  imageUrl?: string
   color: string
   availableDates: Date[]
 }
@@ -24,6 +25,7 @@ export interface IEvent extends Document {
 const ParticipantSchema = new Schema<IParticipant>({
   userId: { type: String, required: false },
   name: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   color: { type: String, required: true },
   availableDates: [{ type: Date, required: true }],
 })

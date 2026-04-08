@@ -34,12 +34,9 @@ function getRandomColor(existingColors: string[]): string {
   )
 }
 
-export async function addParticipant(
-  eventId: string,
-  availableDates: Date[]
-) {
+export async function addParticipant(eventId: string, availableDates: Date[]) {
   const { userId } = await auth()
-  
+
   if (!userId) {
     throw new Error("Unauthorized")
   }
@@ -56,6 +53,8 @@ export async function addParticipant(
     name = user.emailAddresses[0].emailAddress
   }
 
+  const imageUrl = user.imageUrl
+
   await dbConnect()
 
   const event = await Event.findById(eventId)
@@ -69,6 +68,7 @@ export async function addParticipant(
   if (existingParticipant) {
     existingParticipant.availableDates = availableDates
     existingParticipant.name = name
+    existingParticipant.imageUrl = imageUrl
   } else {
     const existingColors = event.participants.map(
       (p: { color: string }) => p.color
@@ -78,6 +78,7 @@ export async function addParticipant(
     event.participants.push({
       userId,
       name,
+      imageUrl,
       color,
       availableDates,
     })
