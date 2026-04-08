@@ -38,7 +38,7 @@ export default async function EventPage({
         <div className="absolute inset-0 z-0 bg-background/20" />
       )}
 
-      <div className="relative z-10 container mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
+      <div className="relative z-10 container mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8">
         <div className="flex flex-col gap-4 rounded-xl border bg-background/80 p-6 shadow-sm backdrop-blur-md">
           {userId && (
             <div>
@@ -51,8 +51,9 @@ export default async function EventPage({
             </div>
           )}
           {serializedEvent.cancelled && (
-            <div className="rounded-md bg-destructive/15 p-4 text-destructive border border-destructive/20 text-sm font-medium">
-              This event has been cancelled by the organizer. You cannot submit or change availability anymore.
+            <div className="rounded-md border border-destructive/20 bg-destructive/15 p-4 text-sm font-medium text-destructive">
+              This event has been cancelled by the organizer. You cannot submit
+              or change availability anymore.
             </div>
           )}
           <div className="flex flex-col gap-2">

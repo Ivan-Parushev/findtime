@@ -1,5 +1,6 @@
 "use server"
 
+import { auth, currentUser } from "@clerk/nextjs/server"
 import dbConnect from "../../lib/mongodb"
 import Event from "../../models/Event"
 import { revalidatePath } from "next/cache"
@@ -35,25 +36,52 @@ function getRandomColor(existingColors: string[]): string {
 
 export async function addParticipant(
   eventId: string,
-  name: string,
   availableDates: Date[]
 ) {
+  const { userId } = await auth()
+  
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const user = await currentUser()
+  if (!user) {
+    throw new Error("User details not found")
+  }
+
+  let name = "Anonymous"
+  if (user.firstName || user.lastName) {
+    name = `${user.firstName || ""} ${user.lastName || ""}`.trim()
+  } else if (user.emailAddresses && user.emailAddresses.length > 0) {
+    name = user.emailAddresses[0].emailAddress
+  }
+
   await dbConnect()
 
   const event = await Event.findById(eventId)
   if (!event) throw new Error("Event not found")
   if (event.cancelled) throw new Error("Event is cancelled")
 
-  const existingColors = event.participants.map(
-    (p: { color: string }) => p.color
+  const existingParticipant = event.participants.find(
+    (p: { userId?: string }) => p.userId === userId
   )
-  const color = getRandomColor(existingColors) ?? "bg-blue-500"
 
-  event.participants.push({
-    name,
-    color,
-    availableDates,
-  })
+  if (existingParticipant) {
+    existingParticipant.availableDates = availableDates
+    existingParticipant.name = name
+  } else {
+    const existingColors = event.participants.map(
+      (p: { color: string }) => p.color
+    )
+    const color = getRandomColor(existingColors) ?? "bg-blue-500"
+
+    event.participants.push({
+      userId,
+      name,
+      color,
+      availableDates,
+    })
+  }
 
   await event.save()
   revalidatePath(`/event/${eventId}`)

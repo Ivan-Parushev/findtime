@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 import { Calendar } from "@workspace/ui/components/calendar"
 import {
   Card,
@@ -25,13 +24,12 @@ export function ParticipateForm({
   endDate: Date
   cancelled?: boolean
 }) {
-  const [name, setName] = useState("")
   const [date, setDate] = useState<DateRange | undefined>()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !date?.from) return
+    if (!date?.from) return
     setIsSubmitting(true)
 
     // Generate dates based on the single range from `mode="range"` logic
@@ -39,10 +37,9 @@ export function ParticipateForm({
     const end = date.to || date.from
     const selectedDates = eachDayOfInterval({ start, end })
 
-    await addParticipant(eventId, name, selectedDates)
+    await addParticipant(eventId, selectedDates)
 
     setIsSubmitting(false)
-    setName("")
     setDate(undefined)
   }
 
@@ -53,18 +50,6 @@ export function ParticipateForm({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="name" className="text-sm font-medium">
-              Your Name
-            </label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              disabled={cancelled || isSubmitting}
-            />
-          </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Select Availability</label>
@@ -110,7 +95,7 @@ export function ParticipateForm({
           </div>
           <Button
             type="submit"
-            disabled={cancelled || isSubmitting || !name || !date?.from}
+            disabled={cancelled || isSubmitting || !date?.from}
           >
             {cancelled
               ? "Cancelled"
