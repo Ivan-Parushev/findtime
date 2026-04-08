@@ -42,6 +42,6 @@ export async function updateEvent(id: string, formData: FormData) {
 
   await Event.findByIdAndUpdate(id, updateData)
 
-  revalidatePath("/dashboard")
+  revalidatePath("/")
   revalidatePath(`/event/${id}`)
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { updateEvent } from "../actions/updateEvent"
+import { updateEvent } from "./actions/updateEvent"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {

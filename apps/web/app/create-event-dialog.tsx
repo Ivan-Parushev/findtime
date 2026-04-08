@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createEvent } from "../actions/createEvent"
+import { createEvent } from "./actions/createEvent"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {

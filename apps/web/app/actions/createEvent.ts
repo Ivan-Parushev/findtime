@@ -43,6 +43,6 @@ export async function createEvent(formData: FormData) {
     },
   })
 
-  revalidatePath("/dashboard")
+  revalidatePath("/")
   return newEvent._id.toString()
 }

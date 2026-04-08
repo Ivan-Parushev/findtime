@@ -43,7 +43,7 @@ export default async function EventPage({
           {userId && (
             <div>
               <Link
-                href="/dashboard"
+                href="/"
                 className="flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 &larr; Back to Dashboard
