@@ -50,7 +50,7 @@ export async function addParticipant(eventId: string, availableDates: Date[]) {
   if (user.firstName || user.lastName) {
     name = `${user.firstName || ""} ${user.lastName || ""}`.trim()
   } else if (user.emailAddresses && user.emailAddresses.length > 0) {
-    name = user.emailAddresses[0].emailAddress
+    name = user.emailAddresses[0]?.emailAddress || "Anonymous"
   }
 
   const imageUrl = user.imageUrl
